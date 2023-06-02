@@ -808,6 +808,7 @@ def get_all_operators(verts, faces, k=120,
     return frames, mass, L, evals, evecs, gradX, gradY
 
 
+# 计算自动缩放的热核签名
 def compute_hks_autoscale(evals, evecs, count=16):
     """
     Compute heat kernel signature with auto-scale
@@ -818,11 +819,15 @@ def compute_hks_autoscale(evals, evecs, count=16):
     Returns:
         out (torch.Tensor): heat kernel signature [B, V, count]
     """
+    # 在给定范围内生成一系列以对数刻度递增的值，用于缩放参数
     scales = torch.logspace(-2.0, 0.0, steps=count, device=evals.device, dtype=evals.dtype)
 
+    # 计算特征值和缩放参数的指数，形成权重系数张量
     power_coefs = torch.exp(-evals.unsqueeze(1) * scales.unsqueeze(-1)).unsqueeze(1) # [B, 1, S, K]
+    # 将特征向量的平方乘以权重系数，得到项（terms）张量
     terms = power_coefs * (evecs * evecs).unsqueeze(2) # [B, V, S, K]
 
+    # 在最后一个维度上对项张量进行求和，得到最终的热核签名
     out = torch.sum(terms, dim=-1) # [B, V, S]
 
     return out

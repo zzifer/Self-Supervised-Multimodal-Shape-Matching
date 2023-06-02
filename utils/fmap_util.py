@@ -2,6 +2,7 @@ import numpy as np
 import torch
 
 
+# 通过最近邻查询找到对应关系
 def nn_query(feat_x, feat_y, dim=-2):
     """
     Find correspondences via nearest neighbor query
@@ -17,6 +18,7 @@ def nn_query(feat_x, feat_y, dim=-2):
     return p2p
 
 
+# 将functional map转换为点到点映射
 def fmap2pointmap(C12, evecs_x, evecs_y):
     """
     Convert functional map to point-to-point map
@@ -31,6 +33,7 @@ def fmap2pointmap(C12, evecs_x, evecs_y):
     return nn_query(torch.matmul(evecs_x, C12.t()), evecs_y)
 
 
+# 将点到点映射转换functional map
 def pointmap2fmap(p2p, evecs_x, evecs_y):
     """
     Convert a point-to-point map to functional map
@@ -42,10 +45,12 @@ def pointmap2fmap(p2p, evecs_x, evecs_y):
     Returns:
         C21 (np.ndarray): functional map (shape y -> shape x). [K, K]
     """
+    # 这一步咋做的不太清楚先放着把
     C21 = torch.linalg.lstsq(evecs_x, evecs_y[p2p, :]).solution
     return C21
 
 
+# 使用ZoomOut方法细化点到点映射
 def refine_pointmap_zoomout(p2p, evecs_x, evecs_y, k_start, step=1):
     """
     ZoomOut to refine a point-to-point map

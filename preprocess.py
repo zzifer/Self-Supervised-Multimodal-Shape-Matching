@@ -30,11 +30,15 @@ if __name__ == '__main__':
     assert n_eig > 0, f'Invalid n_eig: {n_eig}'
     assert os.path.isdir(data_root), f'Invalid data root: {data_root}'
 
+    # no_eig为True表示不进行特征分解，False则表示要进行特征分解
     if not no_eig:
+        # 哪个傻逼写的这代码这么拗口，进入则说明no_eig为False要进行特征分解
         spectral_dir = os.path.join(data_root, 'diffusion')
+        # 创建用于存储结果的目录spectral_dir
         os.makedirs(spectral_dir, exist_ok=True)
 
     if not no_dist:
+        # 进入则说明no_dist为False，要计算测地距离
         dist_dir = os.path.join(data_root, 'dist')
         os.makedirs(dist_dir, exist_ok=True)
 

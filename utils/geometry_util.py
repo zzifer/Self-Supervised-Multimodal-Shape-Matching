@@ -872,6 +872,7 @@ def compute_wks_autoscale(evals, evecs, mass, n_descr=128, subsample_step=1, n_e
     return feats
 
 
+# 在get_random_rotation函数中使用
 def euler_angles_to_rotation_matrix(theta):
     R_x = torch.tensor([[1, 0, 0], [0, torch.cos(theta[0]), -torch.sin(theta[0])], [0, torch.sin(theta[0]), torch.cos(theta[0])]])
     R_y = torch.tensor([[torch.cos(theta[1]), 0, torch.sin(theta[1])], [0, 1, 0], [-torch.sin(theta[1]), 0, torch.cos(theta[1])]])
@@ -883,6 +884,7 @@ def euler_angles_to_rotation_matrix(theta):
     return R
 
 
+# 在data_augmentation函数中使用
 def get_random_rotation(x, y, z):
     thetas = torch.zeros(3, dtype=torch.float)
     degree_angles = [x, y, z]

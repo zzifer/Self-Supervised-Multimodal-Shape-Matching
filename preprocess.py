@@ -47,16 +47,21 @@ if __name__ == '__main__':
     assert len(off_files) != 0
 
     for off_file in tqdm(off_files):
+        # verts (np.ndarray): vertices [V, 3]
+        # faces (np.ndarray): faces [F, 3] or None
         verts, faces = read_shape(off_file)
         filename = os.path.basename(off_file)
 
         if not no_normalize:
             # center shape
+            # 将形状几何数据的顶点坐标减去均值，使形状居中
             verts -= np.mean(verts, axis=0)
 
             # normalize verts by sqrt face area
+            # 计算原始形状的面积开方
             old_sqrt_area = laplacian_decomposition(verts=verts, faces=faces, k=n_eig)[-1]
             print(f'Old face sqrt area: {old_sqrt_area:.3f}')
+            # 将顶点坐标除以原始面积开方，进行归一化
             verts /= old_sqrt_area
 
             # save new verts and faces

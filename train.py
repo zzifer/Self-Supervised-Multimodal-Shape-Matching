@@ -71,6 +71,7 @@ def create_train_val_dataloader(opt, logger):
 
 def train_pipeline(root_path):
     # parse options, set distributed setting, set random seed
+    # 解析选项，设置分布式设置，设置随机种子
     opt = parse_options(root_path, is_train=True)
     opt['root_path'] = root_path
 

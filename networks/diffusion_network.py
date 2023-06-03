@@ -23,6 +23,7 @@ class LearnedTimeDiffusion(nn.Module):
         super(LearnedTimeDiffusion, self).__init__()
         assert method in ['spectral', 'implicit_dense'], f'Invalid method: {method}'
         self.in_channels = in_channels
+        # 用nn.Parameter创建一个可学习的参数diffusion_time
         self.diffusion_time = nn.Parameter(torch.Tensor(in_channels))
         self.method = method
         # init as zero
@@ -42,6 +43,7 @@ class LearnedTimeDiffusion(nn.Module):
         # project times to the positive half-space
         # (and away from 0 in the incredibly rare chance that they get stuck)
         with torch.no_grad():
+            # 将diffusion_time值限制在1e-8及以上
             self.diffusion_time.data = torch.clamp(self.diffusion_time, min=1e-8)
 
         assert feat.shape[-1] == self.in_channels, f'Expected feature channel: {self.in_channels}, but got: {feat.shape[-1]}'

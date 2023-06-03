@@ -50,13 +50,17 @@ class LearnedTimeDiffusion(nn.Module):
 
         if self.method == 'spectral':
             # Transform to spectral
+            # 将输入特征向量feat转换为谱域表示feat_spec
             feat_spec = to_basis(feat, evecs, mass)
 
             # Diffuse
+            # 根据特征值evals和学习到的时间扩散参数self.diffusion_time计算扩散系数diffuse_coefs
             diffuse_coefs = torch.exp(-evals.unsqueeze(-1) * self.diffusion_time.unsqueeze(0))
+            # 将扩散系数乘以谱域特征向量feat_spec，得到扩散后的谱域特征向量feat_diffuse_spec
             feat_diffuse_spec = diffuse_coefs * feat_spec
 
             # Transform back to feature
+            # 使用from_basis函数将谱域特征向量转换回特征表示feat_diffuse
             feat_diffuse = from_basis(feat_diffuse_spec, evecs)
 
         else: # 'implicit_dense'
@@ -65,15 +69,19 @@ class LearnedTimeDiffusion(nn.Module):
             # Form the dense matrix (M + tL) with dims (B, C, V, V)
             mat_dense = L.to_dense().unsuqeeze(1).expand(-1, self.in_channels, -1, -1).clone()
             mat_dense *= self.diffusion_time.unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
+            # 将密集矩阵与输入特征向量和质量矩阵相乘，以解决线性系统
             mat_dense += torch.diag_embed(mass).unsqueeze(1)
 
             # Factor the system
+            # 使用torch.linalg.cholesky对系统进行因式分解
             cholesky_factors = torch.linalg.cholesky(mat_dense)
 
             # Solve the system
             rhs = feat * mass.unsqueeze(-1)
             rhsT = rhs.transpose(1, 2).unsqueeze(-1)
+            # 使用torch.cholesky_solve求解线性系统
             sols = torch.cholesky_solve(rhsT, cholesky_factors)
+            # 调整维度并返回扩散后的特征向量feat_diffuse
             feat_diffuse = sols.squeeze(-1).transpose(1, 2)
 
         return feat_diffuse

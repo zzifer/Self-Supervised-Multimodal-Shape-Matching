@@ -68,21 +68,21 @@ class LearnedTimeDiffusion(nn.Module):
             V = feat.shape[-2]
 
             # Form the dense matrix (M + tL) with dims (B, C, V, V)
+            # 将mat_dense变成（B,C,V,V）的格式
             mat_dense = L.to_dense().unsuqeeze(1).expand(-1, self.in_channels, -1, -1).clone()
+            # 先将diffusion_time变成（1,in_channels,1,1）的格式，然后跟mat_dense相乘
             mat_dense *= self.diffusion_time.unsqueeze(0).unsqueeze(-1).unsqueeze(-1)
-            # 将密集矩阵与输入特征向量和质量矩阵相乘，以解决线性系统
+            # 将mass转换为对角矩阵形式
+            # 到这一步得到了(M+tL)
             mat_dense += torch.diag_embed(mass).unsqueeze(1)
 
             # Factor the system
-            # 使用torch.linalg.cholesky对系统进行因式分解
             cholesky_factors = torch.linalg.cholesky(mat_dense)
 
             # Solve the system
             rhs = feat * mass.unsqueeze(-1)
             rhsT = rhs.transpose(1, 2).unsqueeze(-1)
-            # 使用torch.cholesky_solve求解线性系统
             sols = torch.cholesky_solve(rhsT, cholesky_factors)
-            # 调整维度并返回扩散后的特征向量feat_diffuse
             feat_diffuse = sols.squeeze(-1).transpose(1, 2)
 
         return feat_diffuse

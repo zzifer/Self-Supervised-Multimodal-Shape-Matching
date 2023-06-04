@@ -17,6 +17,7 @@ class LearnedTimeDiffusion(nn.Module):
     def __init__(self, in_channels, method='spectral'):
         """
         Args:
+            这里的channels应该是有几个block（我猜测）
             in_channels (int): number of input channels.
             method (str, optional): method to perform time diffusion. Default 'spectral'.
         """

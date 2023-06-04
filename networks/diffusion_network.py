@@ -80,6 +80,7 @@ class LearnedTimeDiffusion(nn.Module):
             cholesky_factors = torch.linalg.cholesky(mat_dense)
 
             # Solve the system
+            # Mu
             rhs = feat * mass.unsqueeze(-1)
             rhsT = rhs.transpose(1, 2).unsqueeze(-1)
             sols = torch.cholesky_solve(rhsT, cholesky_factors)

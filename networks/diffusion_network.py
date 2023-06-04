@@ -51,17 +51,21 @@ class LearnedTimeDiffusion(nn.Module):
 
         if self.method == 'spectral':
             # Transform to spectral
-            # 将输入特征向量feat转换为谱域表示feat_spec
+            # 将输入特征向量feat映射到拉普拉斯特征向量组成的基的坐标系上
+            # 𝑐 ← Φ^𝑇 𝑀u
             feat_spec = to_basis(feat, evecs, mass)
 
             # Diffuse
             # 根据特征值evals和学习到的时间扩散参数self.diffusion_time计算扩散系数diffuse_coefs
+            # 𝑒^−𝜆𝑖t
             diffuse_coefs = torch.exp(-evals.unsqueeze(-1) * self.diffusion_time.unsqueeze(0))
             # 将扩散系数乘以谱域特征向量feat_spec，得到扩散后的谱域特征向量feat_diffuse_spec
+            # 𝑐𝑖 ← 𝑒^−𝜆𝑖𝑡 𝑐𝑖
             feat_diffuse_spec = diffuse_coefs * feat_spec
 
             # Transform back to feature
             # 使用from_basis函数将谱域特征向量转换回特征表示feat_diffuse
+            # 𝑢 ← Φ𝑐𝑖
             feat_diffuse = from_basis(feat_diffuse_spec, evecs)
 
         else: # 'implicit_dense'

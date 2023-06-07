@@ -15,7 +15,7 @@ def init_dist(backend='nccl', port=29500):
         backend (str, optional): Backend of torch.distributed. Default 'nccl'.
         port (int, optional): the port number for tcp/ip communication. Default 29500.
     """
-    # 检查多进程启动方式，如果未设置则设置未‘spawn’
+    # get_start_method(allow_none=True)获取当前的多进程启动方法，如果未设置则设置为‘spawn’
     if mp.get_start_method(allow_none=True) is None:
         mp.set_start_method('spawn')
 
@@ -25,11 +25,11 @@ def init_dist(backend='nccl', port=29500):
 # 用于在Slurm分布式训练环境下初始化分布式设置
 def _init_dist_slurm(backend, port):
     # 1. get environment info
-    # 获取当前进程的rank，通过环境变量SLURM_PROCID获取
+    # RANK：当前进程的序号，用于进程间通讯，rank = 0 的主机为 master 节点
     rank = int(os.environ['SLURM_PROCID'])
-    # 获取总进程数，通过环境变量SLURM_NTASKS获取
+    # 获取总进程数
     world_size = int(os.environ['SLURM_NTASKS'])
-    # 获取本地rank，通过环境变量SLURM_LOCALID获取
+    # LOCAL_RANK：当前进程对应的GPU号
     local_rank = int(os.environ['SLURM_LOCALID'])
     # 获取节点列表，通过环境变量SLURM_NODELIST获取
     node_list = str(os.environ['SLURM_NODELIST'])

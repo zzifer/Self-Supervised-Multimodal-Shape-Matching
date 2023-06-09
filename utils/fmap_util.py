@@ -19,7 +19,6 @@ def nn_query(feat_x, feat_y, dim=-2):
     return p2p
 
 
-# 将functional map转换为点到点映射
 def fmap2pointmap(C12, evecs_x, evecs_y):
     """
     Convert functional map to point-to-point map
@@ -31,6 +30,7 @@ def fmap2pointmap(C12, evecs_x, evecs_y):
     Returns:
         p2p: point-to-point map (shape y -> shape x). [V2]
     """
+    # 通过C12将evecs_x映射到y然后计算点到点的映射
     return nn_query(torch.matmul(evecs_x, C12.t()), evecs_y)
 
 
@@ -49,9 +49,9 @@ def pointmap2fmap(p2p, evecs_x, evecs_y):
     # torch.linalg.lstsq(Y,X).solution
     # 找到一个解 x，使得方程组的残差 ||Ax - b|| 最小
     # 返回的解 C21 是使得 Ax ≈ B 的近似解
-    # p2p[i]表示y中第i个点与x中第p2p[i]个点最近，
-    # 例：p2p = [2,1,0,3]表示y的第0个点与x的第2个点最近，
-    # 则(evecs_x, evecs_y[p2p, :])就是让evecs_x[0]
+    # 注：这里的p2p是point-to-point map (shape x -> shape y)，
+    # nn_query中的p2p是point-to-point map (shape y -> shape x).
+    # evecs_y[p2p, :]就是让evecs_y重新排列，使得重新排列后每个点与evecs_x距离最近的点对齐
     C21 = torch.linalg.lstsq(evecs_x, evecs_y[p2p, :]).solution
     return C21
 

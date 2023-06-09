@@ -12,7 +12,7 @@ def nn_query(feat_x, feat_y, dim=-2):
     Returns:
         p2p: point-to-point map (shape y -> shape x). [V2].
     """
-    # 计算两组特征向量之间的欧氏距离，并返回他们之间的距离
+    # 计算两组特征向量之间的距离（默认为欧式距离），并返回他们之间的距离
     dist = torch.cdist(feat_x, feat_y)  # [V1, V2]
     # 返回的p2p表示feat_y中第一个点第二个点等分别跟feat_x中哪个点最近
     p2p = dist.argmin(dim=dim)

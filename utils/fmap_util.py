@@ -46,7 +46,9 @@ def pointmap2fmap(p2p, evecs_x, evecs_y):
     Returns:
         C21 (np.ndarray): functional map (shape y -> shape x). [K, K]
     """
-    # 这一步咋做的不太清楚先放着把
+    # torch.linalg.lstsq(Y,X).solution
+    # 找到一个解 x，使得方程组的残差 ||Ax - b|| 最小
+    # 返回的解 C21 是使得 Ax ≈ B 的近似解
     C21 = torch.linalg.lstsq(evecs_x, evecs_y[p2p, :]).solution
     return C21
 

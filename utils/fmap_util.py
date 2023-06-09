@@ -14,7 +14,7 @@ def nn_query(feat_x, feat_y, dim=-2):
     """
     # 计算两组特征向量之间的距离（默认为欧式距离），并返回他们之间的距离
     dist = torch.cdist(feat_x, feat_y)  # [V1, V2]
-    # 返回的p2p表示feat_y中第一个点第二个点等分别跟feat_x中哪个点最近
+    # 返回的p2p[i]表示feat_y的第i个点跟feat_x中的第p2p[i]个点最近
     p2p = dist.argmin(dim=dim)
     return p2p
 
@@ -49,6 +49,9 @@ def pointmap2fmap(p2p, evecs_x, evecs_y):
     # torch.linalg.lstsq(Y,X).solution
     # 找到一个解 x，使得方程组的残差 ||Ax - b|| 最小
     # 返回的解 C21 是使得 Ax ≈ B 的近似解
+    # p2p[i]表示y中第i个点与x中第p2p[i]个点最近，
+    # 例：p2p = [2,1,0,3]表示y的第0个点与x的第2个点最近，
+    # 则(evecs_x, evecs_y[p2p, :])就是让evecs_x[0]
     C21 = torch.linalg.lstsq(evecs_x, evecs_y[p2p, :]).solution
     return C21
 

@@ -44,6 +44,7 @@ if __name__ == '__main__':
         os.makedirs(dist_dir, exist_ok=True)
 
     # read .off files
+    # 使用glob搜索data_root目录下的所有.off 文件，并将找到的文件列表排序
     off_files = sorted(glob(os.path.join(data_root, 'off', '*.off')))
     assert len(off_files) != 0
 
@@ -51,6 +52,7 @@ if __name__ == '__main__':
         # verts (np.ndarray): vertices [V, 3]
         # faces (np.ndarray): faces [F, 3] or None
         verts, faces = read_shape(off_file)
+        # 获取文件的名称
         filename = os.path.basename(off_file)
 
         if not no_normalize:

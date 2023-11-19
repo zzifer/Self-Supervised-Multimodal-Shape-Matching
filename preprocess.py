@@ -16,8 +16,11 @@ if __name__ == '__main__':
     parser = ArgumentParser('Preprocess .off files')
     parser.add_argument('--data_root', required=True, help='data root contains /off sub-folder.')
     parser.add_argument('--n_eig', type=int, default=128, help='number of eigenvectors/values to compute.')
+    # 是否进行laplacian eigen-decomposition
     parser.add_argument('--no_eig', action='store_true', help='no laplacian eigen-decomposition')
+    # 是否计算geodesic matrix
     parser.add_argument('--no_dist', action='store_true', help='no geodesic matrix.')
+    # 是否对面积进行标准化处理
     parser.add_argument('--no_normalize', action='store_true', help='no normalization of face area.')
     args = parser.parse_args()
 
@@ -27,7 +30,9 @@ if __name__ == '__main__':
     no_eig = args.no_eig
     no_dist = args.no_dist
     no_normalize = args.no_normalize
+    # 检查n_eig是否大于0。如果不是，程序会抛出一个异常
     assert n_eig > 0, f'Invalid n_eig: {n_eig}'
+    # 检查data_root是否指向一个有效的目录。如果不是，程序会抛出一个异常
     assert os.path.isdir(data_root), f'Invalid data root: {data_root}'
 
     # no_eig为True表示不进行特征分解，False则表示要进行特征分解
